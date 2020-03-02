@@ -255,6 +255,53 @@ pipeline {
 * Once done, place back a sample index.html and the Dockerfile command COPY index.html /var/www/html
 * Rerun the pipeline to view a new build
 
+# Build from a sub-directory
+* The github repo used also has a sub-directory
+* Use the below pipeline with an extra step to change into a subdirectory of the repo and build the image
+```
+pipeline {
+  environment {
+    registry = "thecloudgarage/k8s-jenkins-test-docker-push"
+    registryCredential = 'dockerhub'
+    dockerImage = ''
+  }
+  agent any
+  stages {
+    stage('Cloning Git') {
+      steps {
+        git 'https://github.com/thecloudgarage/k8s-jenkins-test-docker-push.git'
+      }
+    }
+    stage('change into subdirectory') {
+      steps{
+        sh "cd testing"
+      }
+    }
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+        }
+      }
+    }
+    stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+    stage('Remove Unused docker image') {
+      steps{
+        sh "docker rmi $registry:$BUILD_NUMBER"
+      }
+    }
+  }
+}
+```
+
 # Jenkins running as an image on KOPS k8s cluster with DockerHub as registry. 
 
 * This exercise just builds the image and pushes it to DockerHub. 
