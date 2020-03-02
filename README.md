@@ -213,7 +213,7 @@ docker run -dit -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock theclo
 ```
 pipeline {
   environment {
-    registry = "thecloudgarage/k8s-jenkins-test-docker-push-:latest"
+    registry = "thecloudgarage/k8s-jenkins-test-docker-push"
     registryCredential = 'dockerhub'
     dockerImage = ''
   }
