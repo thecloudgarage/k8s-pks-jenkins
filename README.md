@@ -489,27 +489,27 @@ pipeline {
 kind: StorageClass
 apiVersion: storage.k8s.io/v1beta1
 metadata:
-  name: standard
-provisioner: kubernetes.io/aws-ebs
-volumeBindingMode: WaitForFirstConsumer
+  name: jenkins-pvc
+provisioner: kubernetes.io/vsphere-volume
 parameters:
-  type: gp2
+  diskformat: thin
 ```
 
 ### jenkins-pvc.yml
 
 ```
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: jenkins-pvc
-  annotations:
-    volume.beta.kubernetes.io/storage-class: "standard"
+name: jenkins-pvc
+annotations:
+volume.beta.kubernetes.io/storage-class: "jenkins-pvc"
 spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 8Gi
+accessModes:
+- ReadWriteOnce
+resources:
+requests:
+storage: 8Gi
 ```
 
 ### jenkins-pks-deployment.yml
